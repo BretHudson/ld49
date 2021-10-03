@@ -1,42 +1,90 @@
-enum FOREST_STATE {
+#macro delta_time_seconds (delta_time / 1000000)
+#macro forestWindowWidth 594
+#macro forestWindowHeight 922
+
+enum FOREST_STATE
+{
+	// START_BATTLE,
 	INPUT,
 	PLAYER_TURN,
 	ENEMY_TURN,
+	// FINISH_BATTLE,
 	VENTURE_DEEPER,
 	GAME_OVER,
 	NUM,
 };
 
-enum MENU_OPTIONS {
-	ACTION_1,
-	ACTION_2,
-	ACTION_3,
-	NUM,
-};
-
-enum ITEM_TYPE {
+enum ITEM_TYPE
+{
 	BUTTON,
 	NUM,
 };
 
-enum WINDOWS {
+enum WINDOWS
+{
 	ACTION,
 	HEALTH,
 	FOREST,
 	NUM,
 };
 
+enum PLAYER_ACTION
+{
+	ATTACK,
+	CALL_OUT,
+	DRAW_WEAPON,
+	APPROACH,
+	THREATEN,
+	WAVE_TORCH,
+	NUM,
+};
+
+enum CHARACTER_TYPES
+{
+	PLAYER,
+	GOLEM,
+	MUMMY,
+	SKELETON,
+	SLIME,
+	SPIDER,
+	SPIRIT,
+	NUM,
+};
+
+forestZoom = 6;
+
+characterSprites = [];
+characterSprites[CHARACTER_TYPES.PLAYER] = spr_enemy_skeleton;
+characterSprites[CHARACTER_TYPES.GOLEM] = spr_enemy_golem;
+characterSprites[CHARACTER_TYPES.MUMMY] = spr_enemy_mummy;
+characterSprites[CHARACTER_TYPES.SKELETON] = spr_enemy_skeleton;
+characterSprites[CHARACTER_TYPES.SLIME] = spr_enemy_slime;
+characterSprites[CHARACTER_TYPES.SPIDER] = spr_enemy_spider;
+characterSprites[CHARACTER_TYPES.SPIRIT] = spr_enemy_spirit;
+
 bgX = 0;
 bgY = 0;
 bgSpd = 1;
 
 menuStrings = [];
-menuStrings[MENU_OPTIONS.ACTION_1] = "Action 1";
-menuStrings[MENU_OPTIONS.ACTION_2] = "Action 2";
-menuStrings[MENU_OPTIONS.ACTION_3] = "Action 3";
+menuStrings[PLAYER_ACTION.ATTACK] = "Attack";
+menuStrings[PLAYER_ACTION.CALL_OUT] = "Call Out";
+menuStrings[PLAYER_ACTION.DRAW_WEAPON] = "Draw Weapon";
+menuStrings[PLAYER_ACTION.APPROACH] = "Approach";
+menuStrings[PLAYER_ACTION.THREATEN] = "Threaten";
+menuStrings[PLAYER_ACTION.WAVE_TORCH] = "Wave Torch";
+
+battleRound = 0;
 
 windows = [];
 windowStack = [];
+
+bgSinElapsed = 0;
+bgSinDuration = 8;
+bgSinAmplitude = 100;
+
+screenPaddingX = 96;
+screenPaddingY = 32;
 
 windowCaptionBarHeight = 49;
 contentsPadding = 4;
@@ -44,9 +92,11 @@ bodyPadding = 9;
 buttonW = sprite_get_width(spr_button);
 buttonH = sprite_get_height(spr_button);
 
-playerStats = {
-	xPos: 300,
-	yPos: 300,
+playerStats =
+{
+	type: CHARACTER_TYPES.PLAYER,
+	xPos: (forestWindowWidth / forestZoom) / 2,
+	yPos: (forestWindowWidth / forestZoom) / 2,
 	w: 80,
 	h: 120,
 	curHealth: 100,
@@ -55,9 +105,11 @@ playerStats = {
 	color: c_yellow,
 };
 
-enemyStats = {
-	xPos: 300,
-	yPos: 600,
+enemyStats =
+{
+	type: CHARACTER_TYPES.SPIDER,
+	xPos: (forestWindowWidth / forestZoom) / 2,
+	yPos: (forestWindowWidth / forestZoom),
 	w: 160,
 	h: 100,
 	curHealth: 100,
@@ -68,49 +120,53 @@ enemyStats = {
 
 forestState = 0;
 
+playerTurnState =
+{
+	state: -1,
+	elapsed: 0,
+};
+
+enemyTurnState =
+{
+	state: -1,
+	elapsed: 0,
+};
+
 draggedWindow = undefined;
 dragX = undefined;
 dragY = undefined;
 
-function playerAction()
+function playerAction(action)
 {
-	return function() {
-		// Player turn
-		forestState = FOREST_STATE.PLAYER_TURN;
-		enemyStats.curHealth -= irandom_range(6, 10);
-		if (enemyStats.curHealth <= 0)
-		{
-			// Enemy is dead
-			enemyStats.curHealth = 0;
-			forestState = FOREST_STATE.VENTURE_DEEPER;
-			return;
-		}
-		
-		// Enemy turn
-		forestState = FOREST_STATE.ENEMY_TURN;
-		
-		playerStats.curHealth -= irandom_range(4, 7);
-		if (playerStats.curHealth <= 0)
-		{
-			// Enemy is dead
-			playerStats.curHealth = 0;
-			forestState = FOREST_STATE.GAME_OVER;
-			return;
-		}
-		
-		// Finish
-		forestState = FOREST_STATE.INPUT;
+	var methodState = 
+	{
+		id: self.id,
+		action: action,
 	};
+	
+	return method(methodState, function()
+	{
+		var _action = action; // From methodState
+		with (id)
+		{
+			playerTurnState.elapsed = 0;
+			playerTurnState.state = 0;
+			playerTurnState.action = _action;
+			forestState = FOREST_STATE.PLAYER_TURN;
+		}
+	});
 }
 
-function createWindow(xx, yy, w, h, title)
+function createWindow(xx, yy, w, h, title, responsive = true)
 {
-	var window = {
+	var window =
+	{
 		xPos: xx,
 		yPos: yy,
 		w: w,
 		h: h,
 		title: title,
+		responsive: responsive,
 		dragX: undefined,
 		dragY: undefined,
 		items: [],
@@ -124,7 +180,8 @@ function createWindow(xx, yy, w, h, title)
 
 function createButton(str, onClick)
 {
-	var button = {
+	var button =
+	{
 		xPos: -1,
 		yPos: -1,
 		type: ITEM_TYPE.BUTTON,
@@ -145,18 +202,18 @@ function addButtonToWindow(window, button)
 
 actionWindow = createWindow(100, 400, 401, 600, "Battle");
 healthWindow = createWindow(600, 100, 401, 250, "Health");
-forestWindow = createWindow(1200, 110, 600, 900, "Hero");
+forestWindow = createWindow(1200, 110, forestWindowWidth, forestWindowHeight, "Hero", false);
 
-action1Button = createButton(menuStrings[MENU_OPTIONS.ACTION_1], playerAction());
-action2Button = createButton(menuStrings[MENU_OPTIONS.ACTION_2], playerAction());
-action3Button = createButton(menuStrings[MENU_OPTIONS.ACTION_3], playerAction());
+actionButtons = [];
+
+for (var i = 0; i < PLAYER_ACTION.NUM; ++i)
+{
+	var actionButton = createButton(menuStrings[i], playerAction(i));
+	array_push(actionButtons, actionButton);
+	addButtonToWindow(actionWindow, actionButton);
+}
+
 healButton = createButton("Heal");
 healButton.disabled = true;
-
-actionButtons = [action1Button, action2Button, action3Button];
-
-addButtonToWindow(actionWindow, action1Button);
-addButtonToWindow(actionWindow, action2Button);
-addButtonToWindow(actionWindow, action3Button);
 
 addButtonToWindow(healthWindow, healButton);

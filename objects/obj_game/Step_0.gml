@@ -1,6 +1,8 @@
 bgX -= bgSpd;
 bgY += bgSpd;
 
+bgSinElapsed += delta_time_seconds;
+
 if (keyboard_check_pressed(vk_escape))
 	game_end();
 
@@ -19,11 +21,16 @@ function recalculateWindowItems(window)
 			{
 				item.xPos = xx;
 				item.yPos = yy;
-				item.hover = false;
+				item.hover = point_overlap(mouse_x, mouse_y, item.xPos, item.yPos, buttonW, buttonH);
 				
 				yy += buttonH + contentsPadding;
 			} break;
 		}
+	}
+	
+	if (window.responsive)
+	{
+		window.h = yy - window.yPos + bodyPadding;
 	}
 }
 
@@ -33,9 +40,12 @@ for (var i = 0; i < WINDOWS.NUM; ++i)
 	recalculateWindowItems(windows[i]);
 }
 
-for (var i = 0; i < array_length(actionButtons); ++i)
+// Only enable that which are available
+var actionButtonsDisabled = (forestState != FOREST_STATE.INPUT);
+actionButtons[0].disabled = actionButtonsDisabled || (battleRound < 3);
+for (var i = 1; i < array_length(actionButtons); ++i)
 {
-	actionButtons[i].disabled = (forestState != FOREST_STATE.INPUT);
+	actionButtons[i].disabled = actionButtonsDisabled || (battleRound >= 3);
 }
 
 for (var i = WINDOWS.NUM - 1; i >= 0; --i)
@@ -66,7 +76,6 @@ for (var i = WINDOWS.NUM - 1; i >= 0; --i)
 			{
 				if (item.disabled) continue;
 				
-				item.hover = point_overlap(mouse_x, mouse_y, item.xPos, item.yPos, buttonW, buttonH);
 				if (item.hover == true)
 				{
 					if (mouse_check_button_pressed(mb_left))
@@ -108,6 +117,33 @@ else
 	}
 }
 
+// Push windows back into place
+for (var i = 0; i < array_length(windows); ++i)
+{
+	var window = windows[i];
+	if (window == draggedWindow)
+		continue;
+	
+	if (window.xPos < screenPaddingX)
+	{
+		window.xPos = lerp(window.xPos, screenPaddingX, 0.3);
+	}
+	if (window.yPos < screenPaddingY)
+	{
+		window.yPos = lerp(window.yPos, screenPaddingY, 0.3);
+	}
+	if (window.xPos + window.w >= room_width - screenPaddingX)
+	{
+		window.xPos = lerp(window.xPos, room_width - window.w - screenPaddingX - 1, 0.3);
+	}
+	if (window.yPos + window.h >= room_height - screenPaddingY)
+	{
+		window.yPos = lerp(window.yPos, room_height - window.h - screenPaddingY - 1, 0.3);
+	}
+	
+	recalculateWindowItems(window);
+}
+
 function updateHealth(stats)
 {
 	var diff = abs(stats.visHealth - stats.curHealth);
@@ -126,12 +162,12 @@ switch (forestState)
 	
 	case FOREST_STATE.PLAYER_TURN:
 	{
-		
+		forest_player_turn(playerTurnState);
 	} break;
 	
 	case FOREST_STATE.ENEMY_TURN:
 	{
-		
+		forest_enemy_turn(enemyTurnState);
 	} break;
 	
 	case FOREST_STATE.VENTURE_DEEPER:
@@ -141,6 +177,8 @@ switch (forestState)
 		enemyStats.w *= 1.2;
 		enemyStats.h *= 1.2;
 		enemyStats.yPos -= enemyStats.h - oldH;
+		
+		battleRound = 0;
 		
 		forestState = FOREST_STATE.INPUT;
 	} break;

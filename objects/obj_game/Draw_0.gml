@@ -1,5 +1,6 @@
 // Draw background
 draw_sprite_tiled_ext(bg_pattern, 0, bgX, bgY, 1, 1, c_white, 1);
+draw_sprite_tiled_ext(bg_background, 0, 0, sin(bgSinElapsed) * bgSinAmplitude, 1, 1, c_white, 1);
 
 // Draw windows
 for (var i = 0; i < WINDOWS.NUM; ++i)
@@ -15,6 +16,8 @@ for (var i = 0; i < WINDOWS.NUM; ++i)
 	var window = windowStack[i];
 
 	draw_set_color(c_white);
+	if (window == windows[WINDOWS.FOREST])
+		draw_set_color($202020);
 	draw_rect(window.xPos + bodyPadding, window.yPos + windowCaptionBarHeight, window.w - bodyPadding * 2, window.h - bodyPadding - windowCaptionBarHeight, false);
 	draw_nineslice(spr_window_nineslice, window.xPos, window.yPos, window.w, window.h);
 	
@@ -57,44 +60,15 @@ for (var i = 0; i < WINDOWS.NUM; ++i)
 			} break;
 		}
 	}
+	
+	// Hack to make game not render over other windows
+	if (window == windows[WINDOWS.FOREST])
+	{
+		draw_game();
+	}
 }
 
 draw_set_color(c_white);
 draw_set_valign(fa_top);
-
-// Draw characters
-function drawCharacter(stats)
-{
-	var window = windows[WINDOWS.FOREST];
-	var xx = stats.xPos + window.xPos;
-	var yy = stats.yPos + window.yPos;
-	var w = stats.w;
-	var h = stats.h;
-	var color = stats.color;
-	var curHealth = stats.visHealth;
-	var maxHealth = stats.maxHealth;
-	
-	xx -= (w / 2);
-	draw_set_color(color);
-	draw_rect(xx, yy, w, h, false);
-	xx += (w / 2);
-	
-	var healthH = 20;
-	xx -= (maxHealth / 2);
-	yy -= 8 + healthH;
-	
-	draw_set_color(c_red);
-	draw_rect(xx - 1, yy - 1, maxHealth + 2, healthH + 2, false);
-	
-	draw_set_color(c_lime);
-	draw_rect(xx, yy, curHealth, healthH, false);
-	
-	draw_set_color(c_white);
-}
-
-drawCharacter(playerStats);
-drawCharacter(enemyStats);
-
-draw_set_color(c_white);
 
 draw_sprite(spr_cursor, mouse_check_button(mb_left) ? 1 : 0, mouse_x, mouse_y);
