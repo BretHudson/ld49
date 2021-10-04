@@ -46,6 +46,7 @@
     {"id":{"name":"obj_main_menu","path":"objects/obj_main_menu/obj_main_menu.yy",},"order":1,},
     {"id":{"name":"snd_music_3","path":"sounds/snd_music_3/snd_music_3.yy",},"order":5,},
     {"id":{"name":"windows","path":"scripts/windows/windows.yy",},"order":4,},
+    {"id":{"name":"easing","path":"scripts/easing/easing.yy",},"order":5,},
   ],
   "Options": [
     {"name":"Linux","path":"options/linux/options_linux.yy",},

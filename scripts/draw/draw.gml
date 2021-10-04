@@ -206,9 +206,11 @@ function draw_player(stats, window)
 {
 	var sprite = spr_player_idle;
 	var xx = floor(stats.xPos);
-	var yy = floor(stats.yPos) - sprite_get_height(sprite) + sprite_get_yoffset(sprite);
-	if (forestState == FOREST_STATE.APPROACH_ENEMY)
+	var yy = floor(stats.yPos + stats.yOffset) - sprite_get_height(sprite) + sprite_get_yoffset(sprite);
+	if ((forestState == FOREST_STATE.ENTER_FOREST) || (forestState == FOREST_STATE.APPROACH_ENEMY))
 	    sprite = spr_player_walk;
+	if (stats.executingAction)
+		sprite = spr_player_action;
 	
 	var subimg = globalSpriteFrame % sprite_get_number(sprite);
 	
@@ -223,7 +225,7 @@ function draw_enemy(stats, window)
 	var type = stats.visual;
 	var sprite = characterIdleSprites[type];
 	var xx = floor(stats.xPos);
-	var yy = floor(stats.yPos) - floor(sprite_get_width(sprite) / 2);
+	var yy = floor(stats.yPos) - floor(sprite_get_width(sprite) / 2) + stats.yOffset;
 	var rot = stats.rot;
 	
 	var subimg = globalSpriteFrame % sprite_get_number(sprite);
@@ -233,6 +235,12 @@ function draw_enemy(stats, window)
 	if (stats.reacted == true)
 	{
 	    sprite = characterSprites[type];
+	}
+	
+	if (stats.executingAction)
+	{
+		sprite = characterSprites[type];
+		subimg = 1;
 	}
 	
 	draw_sprite_ext(sprite, subimg, xx, yy, 1, 1, rot, c_white, 1);
@@ -267,8 +275,8 @@ function draw_game(window)
         draw_sprite_part_ext(spr_forest, 0, left, top, width, height, 0, 0, 1, 1, c_white, 1);
     }
     
-	draw_player(playerStats, window);
 	draw_enemy(enemyStats, window);
+	draw_player(playerStats, window);
 	
     var drawX = window.xPos + bodyPadding;
     var drawY = window.yPos + windowCaptionBarHeight;

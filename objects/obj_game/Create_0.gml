@@ -4,6 +4,7 @@ randomize();
 
 enum FOREST_STATE
 {
+	ENTER_FOREST,
 	// START_BATTLE,
 	APPROACH_ENEMY,
 	INPUT,
@@ -163,14 +164,18 @@ initMenus();
 var centerForestWindow = (forestWindowWidth / forestZoom) / 2;
 var height = (forestWindowHeight - bodyPadding - windowCaptionBarHeight) / forestZoom;
 
-playerStats =
+playerTargetY = height - centerForestWindow + sprite_get_height(spr_player_idle);
+
+playerStats = 
 {
 	xPos: centerForestWindow,
-	yPos: height - centerForestWindow + sprite_get_height(spr_player_idle),
+	yPos: forestWindowHeight / forestZoom + 150,
+	yOffset: 0,
 	curHealth: 5,
 	maxHealth: 5,
 	curMana: 2,
 	maxMana: 5,
+	executingAction: false,
 };
 
 enemyStartY = -50;
@@ -183,11 +188,13 @@ enemyStats =
 	visual: enemyStartingType,
 	xPos: centerForestWindow,
 	yPos: enemyStartY,
+	yOffset: 0,
 	curHealth: 3,
 	maxHealth: 3,
 	reacted: false,
 	subImg: -1,
 	rot: 0,
+	executingAction: false,
 };
 
 forestState = 0;

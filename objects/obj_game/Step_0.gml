@@ -28,6 +28,18 @@ fogY += 0.05;
 
 switch (forestState)
 {
+	case FOREST_STATE.ENTER_FOREST:
+	{
+		if (playerStats.yPos > playerTargetY)
+		{
+			playerStats.yPos -= cameraSpd;
+		}
+		else
+		{
+			forestState = FOREST_STATE.APPROACH_ENEMY;
+		}
+	} break;
+	
 	case FOREST_STATE.APPROACH_ENEMY:
 	{
 		if (enemyStats.yPos < enemyTargetY)
