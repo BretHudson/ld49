@@ -115,8 +115,8 @@ function forest_player_turn(state)
 	            		{
 	            			// Enemy is dead
 	            			enemyStats.curHealth = 0;
-	            			forestState = FOREST_STATE.VENTURE_DEEPER;
 	            			playerStats.curMana += 2;
+	            			++enemiesDefeated;
 	            		}
                 	}
                 } break;
@@ -244,6 +244,11 @@ function forest_enemy_turn(state)
     {
         case ENEMY_TURN_STATE.BEGIN_ACTION:
         {
+        	if (enemyStats.curHealth == 0)
+        	{
+        		forestState = FOREST_STATE.VENTURE_DEEPER;
+        	}
+        	
         	if (hasAttacked == false)
         	{
                 state.state = ENEMY_TURN_STATE.DONE;

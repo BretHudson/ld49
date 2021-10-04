@@ -15,11 +15,39 @@ if (keyboard_check_pressed(vk_space))
 var actionButtonsDisabled = (forestState != FOREST_STATE.INPUT);
 for (var i = 0; i < array_length(actionButtons); ++i)
 	actionButtons[i].disabled = actionButtonsDisabled;
-	
+
 actionButtons[PLAYER_ACTION.HEAL].disabled |= (playerStats.curHealth == playerStats.maxHealth) || (playerStats.curMana == 0);
 	
+var identifyDisabled = ((freeActions == 0) && (playerStats.curMana == 0)) || (enemyStats.type == enemyStats.visual);
 for (var i = PLAYER_ACTION.CALL_OUT; i < array_length(actionButtons); ++i)
-	actionButtons[i].disabled |= (freeActions == 0) && (playerStats.curMana == 0);
+	actionButtons[i].disabled |= identifyDisabled;
+
+if (identifyDisabled)
+{
+	identifyWindow.title = "Identify";
+}
+else
+{
+	identifyWindow.title = "Identify ";
+	
+	switch (freeActions)
+	{
+		case 0:
+		{
+			identifyWindow.title += "(Add. Actions = 1 Mana)";
+		} break;
+		
+		case 1:
+		{
+			identifyWindow.title += "(1 Free Turn Left)";
+		} break;
+		
+		default:
+		{
+			identifyWindow.title += "(" + string(freeActions) + " Free Turns Left)";
+		} break;
+	}
+}
 
 update_menu(windowStack);
 
@@ -82,10 +110,17 @@ switch (forestState)
 		enemyStats.curHealth = enemyStats.maxHealth;
 		enemyStats.type = random_enemy_type();
 		enemyStats.visual = enemyStats.type;
+		if (irandom_range(1, 5) <= max(enemiesDefeated, 4))
+		{
+			while (enemyStats.visual == enemyStats.type)
+				enemyStats.visual = random_enemy_type();
+		}
 		enemyStats.yPos = enemyStartY;
 		
 		enemyStats.reacted = false;
-        enemyStats.subImg = -1;
+		enemyStats.subImg = -1;
+		enemyStats.rot = 0;
+		enemyStats.executingAction = false;
 		
 		freeActions = 3;
 		hasAttacked = false;
@@ -98,3 +133,6 @@ switch (forestState)
 		room_goto(rm_menu);
 	} break;
 }
+
+if (playerStats.curMana > playerStats.maxMana)
+	playerStats.curMana = playerStats.maxMana;

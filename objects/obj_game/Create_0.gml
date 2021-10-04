@@ -65,6 +65,8 @@ fogSurface = -1;
 fogX = 0;
 fogY = 0;
 
+enemiesDefeated = 0;
+
 characterSprites = [];
 characterSprites[CHARACTER_TYPES.GOLEM] = spr_enemy_golem;
 characterSprites[CHARACTER_TYPES.MUMMY] = spr_enemy_mummy;
@@ -232,8 +234,8 @@ function playerAction(action)
 	});
 }
 
-identifyWindow = createWindow(100, 420, 401, 600, "Battle - Identify");
-attackWindow = createWindow(100, 150, 401, 600, "Battle - Attack");
+identifyWindow = createWindow(100, 420, 401, 600, "Identify");
+attackWindow = createWindow(100, 150, 401, 600, "Attack");
 healthWindow = createWindow(600, 250, 401, 250, "Health - Player");
 manaWindow = createWindow(600, 100, 401, 250, "Mana");
 enemyStatsWindow = createWindow(600, 550, 401, 250, "Health - Enemy");

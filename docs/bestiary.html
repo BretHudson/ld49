@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Bestiary</title>
+	<meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+	<style type="text/css">
+		html {
+			height: 100%;
+		}
+		
+		body {
+			font-family: 'Nunito', sans-serif;
+			margin: 0;
+			padding: 0;
+			position: relative;
+			height: 100%;
+			background-color: #8ae9ff;
+			overflow-y: scroll;
+			background-image: url('./images/background.png'), url('./images/border.png');
+			background-repeat: repeat, repeat-y;
+		}
+		
+		body::before {
+			content: '';
+			display: block;
+			position: absolute;
+			width: 100%;
+			height: 100%;
+			background-image: url('./images/border.png');
+			background-repeat: repeat-y;
+			transform: scaleX(-1);
+			user-select: none;
+			z-index: -1;
+		}
+		
+		#grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+			grid-template-rows: auto 1fr;
+			padding: 1rem 5rem;
+			gap: 1rem;
+		}
+		
+		.stats {
+			background: white;
+			border-radius: 0.5rem;
+			padding: 1rem;
+		}
+		
+	</style>
+</head>
+<body>
+	<div id="grid">
+		<div class="stats">
+			<h2>Golem</h2>
+			<div>
+				<h3>Resistances</h3>
+				<ul>
+					<li>Fire: Immune</li>
+					<li>Poison: Normal</li>
+					<li>Earth: Weak</li>
+				</ul>
+			</div>
+			<div>
+				<h3>How to Identify</h3>
+				<ul>
+					<li>Call out: No reaction</li>
+					<li>Draw weapon: No reaction</li>
+					<li>Approach: Reaction</li>
+					<li>Threaten: No reaction</li>
+					<li>Wave torch: No reaction</li>
+				</ul>
+			</div>
+		</div>
+		
+		<div class="stats">
+			<h2>Mummy</h2>
+			<div>
+				<h3>Resistances</h3>
+				<ul>
+					<li>Fire: Weak</li>
+					<li>Poison: Immune</li>
+					<li>Earth: Normal</li>
+				</ul>
+			</div>
+			<div>
+				<h3>How to Identify</h3>
+				<ul>
+					<li>Call out: Reaction</li>
+					<li>Draw weapon: Reaction</li>
+					<li>Approach: Reaction</li>
+					<li>Threaten: Reaction</li>
+					<li>Wave torch: No reaction</li>
+				</ul>
+			</div>
+		</div>
+		
+		<div class="stats">
+			<h2>Skeleton</h2>
+			<div>
+				<h3>Resistances</h3>
+				<ul>
+					<li>Fire: Weak</li>
+					<li>Poison: Immune</li>
+					<li>Earth: Normal</li>
+				</ul>
+			</div>
+			<div>
+				<h3>How to Identify</h3>
+				<ul>
+					<li>Call out: No reaction</li>
+					<li>Draw weapon: No reaction</li>
+					<li>Approach: Reaction</li>
+					<li>Threaten: Reaction</li>
+					<li>Wave torch: Reaction</li>
+				</ul>
+			</div>
+		</div>
+		
+		<div class="stats">
+			<h2>Slime</h2>
+			<div>
+				<h3>Resistances</h3>
+				<ul>
+					<li>Fire: Immune</li>
+					<li>Poison: Weak</li>
+					<li>Earth: Normal</li>
+				</ul>
+			</div>
+			<div>
+				<h3>How to Identify</h3>
+				<ul>
+					<li>Call out: Reaction</li>
+					<li>Draw weapon: Reaction</li>
+					<li>Approach: Reaction</li>
+					<li>Threaten: Reaction</li>
+					<li>Wave torch: Reaction</li>
+				</ul>
+			</div>
+		</div>
+		
+		<div class="stats">
+			<h2>Spider</h2>
+			<div>
+				<h3>Resistances</h3>
+				<ul>
+					<li>Fire: Weak</li>
+					<li>Poison: Normal</li>
+					<li>Earth: Immune</li>
+				</ul>
+			</div>
+			<div>
+				<h3>How to Identify</h3>
+				<ul>
+					<li>Call out: Reaction</li>
+					<li>Draw weapon: Reaction</li>
+					<li>Approach: Reaction</li>
+					<li>Threaten: No reaction</li>
+					<li>Wave torch: Reaction</li>
+				</ul>
+			</div>
+		</div>
+		
+		<div class="stats">
+			<h2>Spirit</h2>
+			<div>
+				<h3>Resistances</h3>
+				<ul>
+					<li>Fire: Normal</li>
+					<li>Poison: Weak</li>
+					<li>Earth: Immune</li>
+				</ul>
+			</div>
+			<div>
+				<h3>How to Identify</h3>
+				<ul>
+					<li>Call out: Reaction</li>
+					<li>Draw weapon: No reaction</li>
+					<li>Approach: No reaction</li>
+					<li>Threaten: Reaction</li>
+					<li>Wave torch: Reaction</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

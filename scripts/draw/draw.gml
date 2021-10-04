@@ -222,6 +222,11 @@ function draw_player(stats, window)
 
 function draw_enemy(stats, window)
 {
+	if (stats.curHealth == 0)
+		return;
+		
+	draw_set_color(c_white);
+	
 	var type = stats.visual;
 	var sprite = characterIdleSprites[type];
 	var xx = floor(stats.xPos);
@@ -243,7 +248,8 @@ function draw_enemy(stats, window)
 		subimg = 1;
 	}
 	
-	draw_sprite_ext(sprite, subimg, xx, yy, 1, 1, rot, c_white, 1);
+	var alpha = (enemyStats.type == enemyStats.visual) ? 1 : 0.5;
+	draw_sprite_ext(sprite, subimg, xx, yy, 1, 1, rot, c_white, alpha);
 }
 
 // Draw game
